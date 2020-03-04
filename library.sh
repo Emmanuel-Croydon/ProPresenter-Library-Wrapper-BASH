@@ -37,10 +37,9 @@ waitForUserResponse() {
 syncMasterLibrary() {
 	echo "Pulling down library from master node....."
 
-	# TODO: redirect to debug output
-	git -C $envPPLibraryPath reset --hard
-    git -C $envPPLibraryPath clean -f -d
-    git -C $envPPLibraryPath checkout master
+	echoDebug "$(git -C $envPPLibraryPath reset --hard)"
+    echoDebug "$(git -C $envPPLibraryPath clean -f -d)"
+    echoDebug "$(2>&1 git -C $envPPLibraryPath checkout master)"
     
     firstTry=true
 
@@ -48,7 +47,7 @@ syncMasterLibrary() {
     do
     	firstTry=false
         retry="n"
-        git -C $envPPLibraryPath pull
+        echoDebug "$(git -C $envPPLibraryPath pull)"
         if [ $? -ne 0 ]
         then
             >&2 echo "Failed to sync with master library. Please check your network connection and then retry." || true
@@ -68,23 +67,19 @@ startProPresenter() {
 }
 
 removeLeftoverPlaylistData() {
-	# TODO: only write this on debug please
-	echo "Removing playlist data..."
+	echoDebug "Removing playlist data..."
 	rm -rf "$envPPPlayListLocation/*.pro6pl"
-	echo "Removed."
-	# TODO: check no differences in format between windows and mac
-	echo "Copying default playlist file across..."
-	cp "$envPPLibraryPath/Config Templates/Default.pro6pl" "$envPPPlayListLocation/Default.pro6pl"
-	echo "Copied"
+	echoDebug "Removed."
+	echoDebug "Copying default playlist file across..."
+	cp "$envPPLibraryPath/Config Templates/macOS_Default.pro6pl" "$envPPPlayListLocation/Default.pro6pl"
+	echoDebug "Copied"
 	return 0
 }
 
 copyLabelTemplateFile () {
-	# TODO: only write this on debug please
-	# TODO: check no differences in format or content between windows and mac
-	echo "Copying label templates across..."
-	cp "$envPPLibraryPath/Config Templates/LabelsPreferences.pro6pref" "$envPPLabelLocation/LabelsPreferences.pro6pref"
-	echo "Copied."
+	echoDebug "Copying label templates across..."
+	cp "$envPPLibraryPath/Config Templates/macOS_LabelSettings.xml" "$envPPLabelLocation/LabelSettings.xml"
+	echoDebug "Copied."
 	return 0
 }
 
@@ -100,5 +95,19 @@ elementIn() {
 	shift
 	for e; do [[ "$e" == "$match" ]] && elementInArr=true; done
 	echo "$elementInArr"
+	return 0
+}
+
+echoDebug() {
+	if [ $# -lt 1 ]
+    then
+    	>&2 echo "Missing args in ${FUNCNAME[0]}"
+    	exit 1
+    fi
+
+	if [[ "$-" == *"x"* ]]
+	then
+		echo "$1"
+	fi
 	return 0
 }

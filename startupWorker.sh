@@ -1,7 +1,7 @@
 # export envPPPlayListLocation="/Users/jon/Library/Application Support/RenewedVision/ProPresenter6/Playlists"
 # export envPPLiveDevice=1
 # export envPPLibraryPath="/Volumes/Data/Jon/Workspace/TestRepo/ProPresenter-Test-Library"
-# envPPLabelLocation
+# export envPPLabelLocation="/Users/jon/Library/Preferences/com.renewedvision.ProPresenter6"
 
 
 #!/bin/bash
