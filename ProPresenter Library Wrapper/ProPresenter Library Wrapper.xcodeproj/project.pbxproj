@@ -33,7 +33,6 @@
 		FC76378B2468082A00423B2A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		FC76378D2468083500423B2A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FC7637932468083500423B2A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		FC7637952468083500423B2A /* ProPresenter_Library_Wrapper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ProPresenter_Library_Wrapper.entitlements; sourceTree = "<group>"; };
 		FC76379A2468083500423B2A /* ProPresenter Library WrapperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ProPresenter Library WrapperTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC76379E2468083500423B2A /* ProPresenter_Library_WrapperTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProPresenter_Library_WrapperTests.m; sourceTree = "<group>"; };
 		FC7637A02468083500423B2A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -92,7 +91,6 @@
 				FC76378D2468083500423B2A /* Assets.xcassets */,
 				FC7637A924680B8900423B2A /* Info.plist */,
 				FC7637932468083500423B2A /* main.m */,
-				FC7637952468083500423B2A /* ProPresenter_Library_Wrapper.entitlements */,
 			);
 			path = "ProPresenter Library Wrapper";
 			sourceTree = "<group>";

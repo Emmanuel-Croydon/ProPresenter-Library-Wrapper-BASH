@@ -31,14 +31,14 @@
      selector:@selector(appQuitNotification:)
      name:@"NSWorkspaceDidTerminateApplicationNotification"
      object:nil];
-    [self runInteractiveTerminalApp:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"startupWorker" ofType:@"sh"]]];
+    [self runInteractiveTerminalApp:[[NSBundle mainBundle] pathForResource:@"startupWorker" ofType:@"sh"]];
 }
 
 - (void)appQuitNotification:(NSNotification *)anotification {
     NSString *appName = [[anotification userInfo][NSWorkspaceApplicationKey] localizedName];
     
     if([appName isEqualToString:(@"ProPresenter 6")]) {
-        [self runInteractiveTerminalApp:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"terminationWorker" ofType:@"sh"]]];
+        [self runInteractiveTerminalApp:[[NSBundle mainBundle] pathForResource:@"terminationWorker" ofType:@"sh"]];
     } else {
         // Do nothing
     }
@@ -52,7 +52,7 @@
     [alert runModal];
 }
 
-- (void)runInteractiveTerminalApp:(NSURL *)scriptURL {
+- (void)runInteractiveTerminalApp:(NSString *)scriptPath {
     NSDictionary *errors = [NSDictionary dictionary];
     // load the script from a resource by fetching its URL from within our bundle
     NSString *path = [[NSBundle mainBundle] pathForResource:@"RunInteractiveShell" ofType:@"scpt"];
@@ -66,7 +66,7 @@
             if (appleScript != nil) {
                 // create and populate the list of parameters
                 NSAppleEventDescriptor *parameters = [NSAppleEventDescriptor listDescriptor];
-                [parameters insertDescriptor:[NSAppleEventDescriptor descriptorWithFileURL:scriptURL] atIndex:1];
+                [parameters insertDescriptor:[NSAppleEventDescriptor descriptorWithString:scriptPath] atIndex:1];
                 
                 // create the AppleEvent target
                 ProcessSerialNumber psn = {0, kCurrentProcess};

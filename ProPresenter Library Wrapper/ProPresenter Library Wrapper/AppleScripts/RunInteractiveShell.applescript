@@ -18,7 +18,7 @@ end getExitCode
 
 on runInteractiveTerminalApp(pathToShScript as string)
     set posixPathToShScript to POSIX file pathToShScript as alias
-    
+
     tell application "Finder"
         set parentPath to POSIX path of (parent of posixPathToShScript as string)
         set fileName to name of posixPathToShScript
