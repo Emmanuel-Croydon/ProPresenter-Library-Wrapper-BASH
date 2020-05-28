@@ -39,6 +39,7 @@
     
     if([appName isEqualToString:(@"ProPresenter 6")]) {
         [self runInteractiveTerminalApp:[[NSBundle mainBundle] pathForResource:@"terminationWorker" ofType:@"sh"]];
+        [NSApp terminate:nil];
     } else {
         // Do nothing
     }
@@ -82,8 +83,10 @@
                 [event setParamDescriptor:parameters forKeyword:keyDirectObject];
                 
                 // call the event in AppleScript
-                int returnCode = [[appleScript executeAppleEvent:event error:&errors] int32Value] ?: 1;
-                if (errors != nil || returnCode != 0) {
+                NSAppleEventDescriptor *result =[appleScript executeAppleEvent:event error:&errors];
+                int returnCode = [[result stringValue] intValue];
+
+                if ([errors count] > 0 || returnCode != 0) {
                     [self showErrorDialogue:@"An error has occurred with the ProPresenter Library sync scripts" informativeText:@"Please provide the contents of the terminal window to support."];
                     NSLog(@"ProPresenter Library Wrapper sync scripts have finished abnormally with return code: %d", returnCode);
                     NSLog(@"ProPresenter Library Wrapper errors: %@", errors);

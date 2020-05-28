@@ -48,7 +48,7 @@ on runInteractiveTerminalApp(pathToShScript as string)
             if not busy of cdScript then exit repeat
         end repeat
         
-        set shScript to do script "./" & fileName in activeWindow
+        set shScript to do script "./" & fileName & " -x" in activeWindow
         repeat
             delay 0.5
             if not busy of shScript then exit repeat
@@ -65,8 +65,8 @@ on runInteractiveTerminalApp(pathToShScript as string)
     
     if exitCode = 0 then
         tell application "Terminal"
-            close activeWindow
             set theWindows to windows
+            close activeWindow
             set windowsCount to count of theWindows
             if windowsCount = 0 then
                 quit

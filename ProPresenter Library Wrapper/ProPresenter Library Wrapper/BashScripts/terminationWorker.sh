@@ -1,19 +1,30 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # ==================================================================================================
 # TERMINATION WORKER
 # ==================================================================================================
 #
 
-
 . ./library.sh
 
 set -e
 
+propertiesFile="./envConfig.properties"
+while IFS="=" read -r key value
+do
+    readEnvironmntConfig "$key" "$value"
+done < "$propertiesFile"
+
+checkInstall
+
 branchName=$(getWorkingBranchName)
 
-git -C "$PPLibraryPath" status --porcelain=v1 | while IFS= read -r line
+exec 3<>statusStream
+git -C "$PPLibraryPath" status --porcelain=v1 >3
+
+while IFS= read -r -u4 line
 do
+    validArgs=("y" "n")
     commitBool="n"
     untrackedRegex="^\?\? "
     modifiedRegex="^ M "
@@ -23,18 +34,18 @@ do
     then
         changeType="Added"
         filePath=$(getUntrackedFilePath "$line")
-        response=$(waitForUserResponse "Add '$filePath'?" validArgs[@])
+        commitBool=$(waitForUserResponse "Add '$filePath'?" validArgs[@])
     elif [[ "$line" =~ $modifiedRegex ]]
     then
         changeType="Modified"
         filePath=$(getTrackedFilePath "$line")
         # TODO: get UUID regenerations and filter out
-        response=$(waitForUserResponse "Modify '$filePath'?" validArgs[@])
+        commitBool=$(waitForUserResponse "Modify '$filePath'?" validArgs[@])
     elif [[ "$line" =~ $deletedRegex ]]
     then
         changeType="Removed"
         filePath=$(getTrackedFilePath "$line")
-        response=$(waitForUserResponse "Remove '$filePath'?" validArgs[@])
+        commitBool=$(waitForUserResponse "Remove '$filePath'?" validArgs[@])
     else
         echo "Unknown object - please contact support"
         commitBool="n"
@@ -44,7 +55,8 @@ do
     then
         if [ "$branchName" == "master" ]
         then
-            branchName=newBranch
+            newBranch
+            branchName=$(getWorkingBranchName)
             invokeChangeCommit "$filePath" "$changeType"
         else
             invokeChangeCommit "$filePath" "$changeType"
@@ -54,13 +66,17 @@ do
         # Do Nothing
         echoDebug "commitBool == n"
     fi
-done
+done 4<3
 
 if [ "$branchName" != "master" ]
 then
     invokeChangePush "$branchName"
-    #TODO: PR process
+    # TODO: PR process
     echo "PR process"
 else
     echo "No changes added."
 fi
+
+exec 3>&-
+rm 3
+rm statusStream

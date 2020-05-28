@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FC05D011246B504000D686A4 /* envConfig.properties in Resources */ = {isa = PBXBuildFile; fileRef = FC05D010246B504000D686A4 /* envConfig.properties */; };
 		FC76378C2468082A00423B2A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FC76378B2468082A00423B2A /* AppDelegate.m */; };
 		FC76378E2468083500423B2A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC76378D2468083500423B2A /* Assets.xcassets */; };
 		FC7637942468083500423B2A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FC7637932468083500423B2A /* main.m */; };
@@ -28,6 +29,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FC05D010246B504000D686A4 /* envConfig.properties */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = envConfig.properties; sourceTree = "<group>"; };
 		FC7637872468082A00423B2A /* ProPresenter Library Wrapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ProPresenter Library Wrapper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC76378A2468082A00423B2A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		FC76378B2468082A00423B2A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 		FC7637892468082A00423B2A /* ProPresenter Library Wrapper */ = {
 			isa = PBXGroup;
 			children = (
+				FC05D010246B504000D686A4 /* envConfig.properties */,
 				FC7637AC246823B600423B2A /* BashScripts */,
 				FC7637AB246823A200423B2A /* AppleScripts */,
 				FC76378A2468082A00423B2A /* AppDelegate.h */,
@@ -207,6 +210,7 @@
 				FC7637B924685DD100423B2A /* RunInteractiveShell.scpt in Resources */,
 				FC7637B724685D9200423B2A /* library.sh in Resources */,
 				FC7637B624685D9200423B2A /* terminationWorker.sh in Resources */,
+				FC05D011246B504000D686A4 /* envConfig.properties in Resources */,
 				FC7637B524685D9200423B2A /* startupWorker.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,5 +1,20 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
+readEnvironmntConfig() {
+    if [ $# -ne 2 ]
+    then
+        >&2 echo "Missing args in ${FUNCNAME[0]}"
+        exit 1
+    fi
+    export "$1"="$2"
+    
+    if [ $? -ne 0 ]
+    then
+        return 1
+    else
+        return 0
+    fi
+}
 
 waitForUserResponse() {
     if [ $# -eq 0 ]
@@ -22,26 +37,26 @@ waitForUserResponse() {
 
     while [ 1 -eq 1 ]
     do
-    	printf "$userActionRequired\n"
+    	printf "$userActionRequired\n" 1>&2
     	read response
-
-    	if [ $(elementIn "$response" "${validResponses[@]}") == true ]
+        
+    	if [ $(elementIn "$response" "${validResponses[@]}") == "TRUE" ]
     	then
     		echo "$response"
     		return 0
     	else
-    		echo "Invalid input. Please enter one of the following: $validResponsesString"
-    		echo "---------------------------------------------------------------------------"
+    		echo "Invalid input $response. Please enter one of the following: $validResponsesString" 1>&2
+    		echo "---------------------------------------------------------------------------" 1>&2
     	fi
     done
 }
 
 syncMasterLibrary() {
 	echo "Pulling down library from master node....."
-
-	echoDebug "$(git -C "$PPLibraryPath" reset --hard)"
-    echoDebug "$(git -C "$PPLibraryPath" clean -f -d)"
-    echoDebug "$(2>&1 git -C "$PPLibraryPath" checkout master)"
+    
+	echoDebug git -C "$PPLibraryPath" reset --hard
+    echoDebug git -C "$PPLibraryPath" clean -f -d
+    echoDebug 2>&1 git -C "$PPLibraryPath" checkout master
     
     local firstTry=true
 
@@ -49,7 +64,7 @@ syncMasterLibrary() {
     do
     	firstTry=false
         local retry="n"
-        echoDebug "$(git -C "$PPLibraryPath" pull)"
+        echoDebug git -C "$PPLibraryPath" pull
         if [ $? -ne 0 ]
         then
             >&2 echo "Failed to sync with master library. Please check your network connection and then retry." || true
@@ -68,20 +83,34 @@ startProPresenter() {
 }
 
 removeLeftoverPlaylistData() {
-	echoDebug "Removing playlist data..."
+	echoDebug echo 'Removing playlist data...'
 	rm -rf "$PPPlayListLocation/*.pro6pl"
-	echoDebug "Removed."
-	echoDebug "Copying default playlist file across..."
-	cp "$PPLibraryPath/Config Templates/macOS_Default.pro6pl" "$PPPlayListLocation/Default.pro6pl"
-	echoDebug "Copied"
-	return 0
+	echoDebug echo 'Removed.'
+	echoDebug echo 'Copying default playlist file across...'
+    echo "$PPLibraryPath"
+    echo "$PPLibraryPath/Config Templates/macOS_Default.pro6pl"
+	cp "$PPLibraryPath/Config Templates/macOS_Default.pro6pl"  "$PPPlayListLocation/Default.pro6pl"
+    if [ $? -ne 0 ]
+    then
+        >&2 echo "Failed to copy playlist file."
+        return 1
+    else
+        echoDebug echo 'Copied.'
+        return 0
+    fi
 }
 
 copyLabelTemplateFile() {
-	echoDebug "Copying label templates across..."
+	echoDebug echo 'Copying label templates across...'
 	cp "$PPLibraryPath/Config Templates/macOS_LabelSettings.xml" "$PPLabelLocation/LabelSettings.xml"
-	echoDebug "Copied."
-	return 0
+    if [ $? -ne 0 ]
+    then
+        >&2 echo "Failed to copy template file."
+        return 1
+    else
+        echoDebug echo 'Copied.'
+        return 0
+    fi
 }
 
 getTrackedFilePath() {
@@ -115,14 +144,14 @@ getUntrackedFilePath() {
     local filePath
     local untrackedFilePathRegex="(\?\? )(.*)"
     
-    filePath=$([[ "$1" =~ $quotedFilePathRegex ]] && echo ${BASH_REMATCH[2]})
+    filePath=$([[ "$1" =~ $untrackedFilePathRegex ]] && echo ${BASH_REMATCH[2]})
     echo "$filePath"
     return 0
 }
 
 getWorkingBranchName() {
-    local branchName=$(git -C "$PPLibraryPath" rev-parse --abbrev-ref HEAD)
-    echoDebug "$branchName"
+    local branchName="$(git -C "$PPLibraryPath" rev-parse --abbrev-ref HEAD)"
+    echoDebug echo '$branchName'
     echo "$branchName"
     return 0
 }
@@ -132,7 +161,8 @@ newBranch() {
     local machine=$(hostname)
     local user=$(whoami)
     local branchName="AUTO/$machine/$user/$dateTime"
-    echoDebug "$(2>&1 git -C "$PPLibraryPath" checkout -b "$branchName")"
+    echoDebug 2>&1 git -C "$PPLibraryPath" checkout -b "$branchName"
+    echoDebug git -C "$PPLibraryPath" branch
     if [ $? -eq 0 ]
     then
         invokeBranchPush "$branchName"
@@ -156,7 +186,7 @@ invokeBranchPush() {
         firstTry=false
         retry="n"
         
-        echoDebug $(2>&1 git -C "$PPLibraryPath" push --set-upstream origin "$1")
+        echoDebug 2>&1 git -C "$PPLibraryPath" push --set-upstream origin "$1"
         
         if [ $? -ne 0 ]
         then
@@ -176,21 +206,22 @@ invokeChangeCommit() {
         exit 1
     fi
     
-    echoDebug "Invoke commit"
-    echoDebug $(2>&1 git -C "$PPLibraryPath" add "$1")
+    echoDebug echo 'Invoke commit'
+    echoDebug 2>&1 git -C "$PPLibraryPath" add "$1"
+    echoDebug git -C "$PPLibraryPath" status
     
     local dateTime=$(date +"%Y-%m-%d_%H%M")
     local machine=$(hostname)
     local user=$(whoami)
-    echoDebug "Change added"
-    echoDebug $(2>&1 git -C "$PPLibraryPath" commit -m "$2 $1 $dateTime $machine/$user")
+    echoDebug echo 'Change added'
+    echoDebug 2>&1 git -C "$PPLibraryPath" commit -m "$2 $1 $dateTime $machine/$user"
     if [ $? -ne 0 ]
     then
-        echoDebug "Change committed"
-        return 0
-    else
         >&2 echo "Commit failed, please contact support"
         return 1
+    else
+        echoDebug echo 'Change committed'
+        return 0
     fi
 }
 
@@ -203,14 +234,13 @@ invokeChangePush() {
     
     local firstTry=true
     local retry
-    echo "Creating branch"
     
     while [[ $firstTry == true || $retry == "y" ]]
     do
         firstTry=false
         retry="n"
         
-        echoDebug $(2>&1 git -C "$PPLibraryPath" push)
+        echoDebug 2>&1 git -C "$PPLibraryPath" push
         
         if [ $? -ne 0 ]
         then
@@ -235,22 +265,33 @@ elementIn() {
 	shift
 	for element
     do
-        [[ "$e" == "$match" ]] && echo true && return 0
+        if [[ "$element" == "$match" ]]
+        then
+            echo "TRUE"
+            return 0
+        fi
     done
+    echo "FALSE"
+    return 0
 }
 
 echoDebug() {
-	if [ $# -lt 1 ]
+    if [[ "$-" == *"x"* ]]
     then
-    	>&2 echo "Missing args in ${FUNCNAME[0]}"
-    	exit 1
+        local output=$("$@")
+        local exitCode="$?"
+        echo "$output"
+    else
+        local output=$("$@")
+        local exitCode="$?"
     fi
-
-	if [[ "$-" == *"x"* ]]
-	then
-		echo "$1"
-	fi
-	return 0
+    
+    if [ "$exitCode" -ne 0 ]
+    then
+        return "$exitCode"
+    else
+        return 0
+    fi
 }
 
 checkInstall() {

@@ -1,13 +1,19 @@
+#!/bin/bash
+
 # ==================================================================================================
 # STARTUP WORKER
 # ==================================================================================================
 #
 
-#!/usr/bin/env bash
-
 . ./library.sh
 
 set -e
+
+propertiesFile="./envConfig.properties"
+while IFS="=" read -r key value
+do
+    readEnvironmntConfig "$key" "$value"
+done < "$propertiesFile"
 
 checkInstall
 
