@@ -19,7 +19,7 @@ checkInstall
 
 branchName=$(getWorkingBranchName)
 
-exec 3<>statusStream
+exec 3<>/dev/null
 git -C "$PPLibraryPath" status --porcelain=v1 >3
 
 while IFS= read -r -u4 line
@@ -64,19 +64,17 @@ do
     elif [ "$commitBool" == "n" ]
     then
         # Do Nothing
-        echoDebug "commitBool == n"
+        echoDebug echo "commitBool == n"
     fi
 done 4<3
 
 if [ "$branchName" != "master" ]
 then
     invokeChangePush "$branchName"
-    # TODO: PR process
-    echo "PR process"
+    newPullRequest "$branchName"
 else
     echo "No changes added."
 fi
 
 exec 3>&-
 rm 3
-rm statusStream

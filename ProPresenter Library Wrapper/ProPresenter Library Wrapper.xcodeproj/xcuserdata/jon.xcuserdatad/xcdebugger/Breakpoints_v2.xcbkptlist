@@ -48,8 +48,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "59"
             endingLineNumber = "59"
-            landmarkName = "AppDelegate"
-            landmarkType = "3">
+            landmarkName = "-runInteractiveTerminalApp:"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -144,7 +144,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "56"
             endingLineNumber = "56"
-            landmarkName = "-showErrorDialogue:informativeText:"
+            landmarkName = "-runInteractiveTerminalApp:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

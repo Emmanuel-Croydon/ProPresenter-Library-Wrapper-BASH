@@ -253,6 +253,31 @@ invokeChangePush() {
     return 0
 }
 
+newPullRequest() {
+    if [ $# -ne 1 ]
+    then
+        >&2 echo "Incorrect args in ${FUNCNAME[0]}"
+        exit 1
+    fi
+    
+    local branchName="$1"
+    local dateTime=$(date +"%Y-%m-%d %H%M")
+    local githubRequestUri="https://api.github.com/repos/$PPRepoLocation/pulls"
+    local json='{"title": "'"AUTO pull request: $dateTime"'", "body": "'"Pull Request created automatically by ProPresenter-Library-Wrapper at $dateTime"'", "head": "'"$branchName"'", "base": "master"}'
+    
+    local response=$(curl -X POST -H "Content-Type: application/json" -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $PPLibraryAuthToken" -d "$json" "$githubRequestUri" -w "%{http_code}\n" -s -o /dev/null)
+    
+    if [[ $response == 201 ]]
+    then
+        echo "Successfully opened a pull request on $branchName"
+        return 0
+    else
+        >&2 echo "An error has occurred. Please give the support team the following information to add your changes: $branchName"
+        sleep 5
+        return 1
+    fi
+}
+
 elementIn() {
 	if [ $# -lt 2 ]
     then
