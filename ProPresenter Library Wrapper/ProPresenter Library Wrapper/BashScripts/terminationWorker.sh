@@ -5,8 +5,6 @@
 # ==================================================================================================
 #
 
-# TODO: clean up and make pretty
-# TODO: test
 # TODO: work out how to build and distribute
 
 . ./library.sh
@@ -20,6 +18,7 @@ do
 done < "$propertiesFile"
 
 checkInstall
+clear
 
 branchName=$(getWorkingBranchName)
 

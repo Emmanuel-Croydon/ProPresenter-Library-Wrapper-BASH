@@ -33,16 +33,26 @@ on runInteractiveTerminalApp(pathToShScript as string)
                 if not busy of openNewWindow then exit repeat
             end repeat
             set activeWindow to window 1
+            set bounds of activeWindow to {100, 100, 1000, 700}
+            tell activeWindow
+                set normal text color to {57802,57802,1222}
+                set background color to {1000,200,20000}
+            end tell
         end tell
     else
         tell application "Terminal"
             activate
             set activeWindow to window 1
+            set bounds of activeWindow to {100, 100, 1000, 700}
+            tell activeWindow
+                set normal text color to {57802,57802,1222}
+                set background color to {1000,200,20000}
+            end tell
         end tell
     end if
     
     tell application "Terminal"
-        set cdScript to do script "cd \"" & parentPath & "\"" in activeWindow
+        set cdScript to do script "cd \"" & parentPath & "\"; export PS1=''; clear" in activeWindow
         repeat
             delay 0.5
             if not busy of cdScript then exit repeat

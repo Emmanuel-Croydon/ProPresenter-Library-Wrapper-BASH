@@ -16,6 +16,8 @@ do
 done < "$propertiesFile"
 
 checkInstall
+clear
+writeSplashScreen
 
 firstTry=true
 repeat=false
