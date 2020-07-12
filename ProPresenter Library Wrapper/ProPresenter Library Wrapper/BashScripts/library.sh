@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readEnvironmntConfig() {
+readEnvironmentConfig() {
     if [ $# -ne 2 ]
     then
         >&2 echo "Missing args in ${FUNCNAME[0]}"
@@ -56,7 +56,7 @@ syncMasterLibrary() {
     
 	echoDebug git -C "$PPLibraryPath" reset --hard
     echoDebug git -C "$PPLibraryPath" clean -f -d
-    echoDebug 2>&1 git -C "$PPLibraryPath" checkout master
+    echoDebug git -C "$PPLibraryPath" checkout master
     
     local firstTry=true
 
@@ -87,8 +87,8 @@ removeLeftoverPlaylistData() {
 	rm -rf "$PPPlayListLocation/*.pro6pl"
 	echoDebug echo 'Removed.'
 	echoDebug echo 'Copying default playlist file across...'
-    echo "$PPLibraryPath"
-    echo "$PPLibraryPath/Config Templates/macOS_Default.pro6pl"
+    echoDebug echo "$PPLibraryPath"
+    echoDebug echo "$PPLibraryPath/Config Templates/macOS_Default.pro6pl"
 	cp "$PPLibraryPath/Config Templates/macOS_Default.pro6pl"  "$PPPlayListLocation/Default.pro6pl"
     if [ $? -ne 0 ]
     then
@@ -121,7 +121,7 @@ getTrackedFilePath() {
     fi
     
     local filePath
-    local quotedFilePathRegex="(.*)([\"\'])(.*)([\"\'])"
+    local quotedFilePathRegex="([^.])([\"\'])(.*)([\"\'])"
     local unquotedFilePathRegex="( [MD] )(.*)"
     
     filePath=$([[ "$1" =~ $quotedFilePathRegex ]] && echo ${BASH_REMATCH[3]})
@@ -161,7 +161,7 @@ newBranch() {
     local machine=$(hostname)
     local user=$(whoami)
     local branchName="AUTO/$machine/$user/$dateTime"
-    echoDebug 2>&1 git -C "$PPLibraryPath" checkout -b "$branchName"
+    echoDebug git -C "$PPLibraryPath" checkout -b "$branchName"
     echoDebug git -C "$PPLibraryPath" branch
     if [ $? -eq 0 ]
     then
@@ -186,7 +186,7 @@ invokeBranchPush() {
         firstTry=false
         retry="n"
         
-        echoDebug 2>&1 git -C "$PPLibraryPath" push --set-upstream origin "$1"
+        echoDebug git -C "$PPLibraryPath" push --set-upstream origin "$1"
         
         if [ $? -ne 0 ]
         then
@@ -207,14 +207,14 @@ invokeChangeCommit() {
     fi
     
     echoDebug echo 'Invoke commit'
-    echoDebug 2>&1 git -C "$PPLibraryPath" add "$1"
+    echoDebug git -C "$PPLibraryPath" add "$1"
     echoDebug git -C "$PPLibraryPath" status
     
     local dateTime=$(date +"%Y-%m-%d_%H%M")
     local machine=$(hostname)
     local user=$(whoami)
     echoDebug echo 'Change added'
-    echoDebug 2>&1 git -C "$PPLibraryPath" commit -m "$2 $1 $dateTime $machine/$user"
+    echoDebug git -C "$PPLibraryPath" commit -m "$2 $1 $dateTime $machine/$user"
     if [ $? -ne 0 ]
     then
         >&2 echo "Commit failed, please contact support"
@@ -240,7 +240,7 @@ invokeChangePush() {
         firstTry=false
         retry="n"
         
-        echoDebug 2>&1 git -C "$PPLibraryPath" push
+        echoDebug git -C "$PPLibraryPath" push
         
         if [ $? -ne 0 ]
         then
@@ -278,6 +278,86 @@ newPullRequest() {
     fi
 }
 
+getUuidRegen() {
+    if [ $# -ne 1 ]
+    then
+        >&2 echo "Incorrect args in ${FUNCNAME[0]}"
+        exit 1
+    fi
+    
+    echoDebug echo "Checking whether only changes are UUID regenerations..."
+    
+    exec 5<>/dev/null
+    git -C "$PPLibraryPath" diff --word-diff=porcelain "$1" >5
+    
+    local quantityFilterRegex='^@@ \-[0-9]+,7 \+[0-9]+,7 @@'
+    local plusFilterRegex='^\+UUID="[a-z, A-Z, 0-9]{8}-[a-z, A-Z, 0-9]{4}-[a-z, A-Z, 0-9]{4}-[a-z, A-Z, 0-9]{4}-[a-z, A-Z, 0-9]{12}"$'
+    local minusFilterRegex='^\-UUID="[a-z, A-Z, 0-9]{8}-[a-z, A-Z, 0-9]{4}-[a-z, A-Z, 0-9]{4}-[a-z, A-Z, 0-9]{4}-[a-z, A-Z, 0-9]{12}"$'
+    
+    while IFS= read -r -u6 line
+    do
+        if [[ ! "$line" =~ $quantityFilterRegex ]] || [[ ! "$line" =~ $plusFilterRegex ]] || [[ ! "$line" =~ $minusFilterRegex ]]
+        then
+            echo "FALSE"
+            echoDebug echo "UUIDRegen? FALSE"
+            return 0
+        else
+            echo "TRUE"
+        fi
+    done 6<5
+    
+    echoDebug echo "UUIDRegen? TRUE"
+    exec 5>&- && rm 5
+    
+    return 0
+}
+
+reformatXML() {
+    if [ $# -ne 1 ]
+    then
+        >&2 echo "Incorrect args in ${FUNCNAME[0]}"
+        exit 1
+    fi
+        
+    tidy --input-xml yes --output-xml yes --add-xml-decl yes --literal-attributes yes --indent-attributes no --wrap-attributes no --wrap 0 --input-encoding utf8 --output-encoding utf8 --newline crlf -iqm "$PPLibraryPath/$1"
+    
+    if [[ "$?" -ne 0 ]]
+    then
+        return 1
+    fi
+    
+    cp "$PPLibraryPath/$1" "$PPLibraryPath/$1.bak" &&
+    xmllint --encode utf-8 "$PPLibraryPath/$1.bak" > "$PPLibraryPath/$1" &&
+    rm "$PPLibraryPath/$1.bak"
+
+    if [[ "$?" -ne 0 ]]
+    then
+        return 1
+    fi
+    
+    sed -i '' 's/<\?xml version="1\.0"\?>/<\?xml version="1\.0" encoding="utf-8"?>/g' "$PPLibraryPath/$1"
+    
+    return "$?"
+}
+
+onlyLineChanges() {
+    if [ $# -ne 1 ]
+    then
+        >&2 echo "Incorrect args in ${FUNCNAME[0]}"
+        exit 1
+    fi
+    
+    local output=$(git -C "$PPLibraryPath" status --porcelain=v1 "$1")
+    
+    if [ "$output" == "" ]
+    then
+        echo "TRUE"
+    else
+        echo "FALSE"
+    fi
+    return 0
+}
+
 elementIn() {
 	if [ $# -lt 2 ]
     then
@@ -301,13 +381,13 @@ elementIn() {
 }
 
 echoDebug() {
-    if [[ "$-" == *"x"* ]]
+    if [[ "$-" == *x* ]]
     then
-        local output=$("$@")
+        local output=$("$@" 2>&1)
         local exitCode="$?"
-        echo "$output"
+        >&2 echo "$output"
     else
-        local output=$("$@")
+        local output=$("$@" 2>&1)
         local exitCode="$?"
     fi
     

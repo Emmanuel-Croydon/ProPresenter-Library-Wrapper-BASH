@@ -12,7 +12,7 @@ set -e
 propertiesFile="./envConfig.properties"
 while IFS="=" read -r key value
 do
-    readEnvironmntConfig "$key" "$value"
+    readEnvironmentConfig "$key" "$value"
 done < "$propertiesFile"
 
 checkInstall

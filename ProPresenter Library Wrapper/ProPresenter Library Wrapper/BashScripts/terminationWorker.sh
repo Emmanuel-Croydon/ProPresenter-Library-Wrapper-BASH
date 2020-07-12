@@ -5,6 +5,10 @@
 # ==================================================================================================
 #
 
+# TODO: clean up and make pretty
+# TODO: test
+# TODO: work out how to build and distribute
+
 . ./library.sh
 
 set -e
@@ -12,7 +16,7 @@ set -e
 propertiesFile="./envConfig.properties"
 while IFS="=" read -r key value
 do
-    readEnvironmntConfig "$key" "$value"
+    readEnvironmentConfig "$key" "$value"
 done < "$propertiesFile"
 
 checkInstall
@@ -34,17 +38,28 @@ do
     then
         changeType="Added"
         filePath=$(getUntrackedFilePath "$line")
+        reformatXML "$filePath"
         commitBool=$(waitForUserResponse "Add '$filePath'?" validArgs[@])
     elif [[ "$line" =~ $modifiedRegex ]]
     then
         changeType="Modified"
         filePath=$(getTrackedFilePath "$line")
-        # TODO: get UUID regenerations and filter out
-        commitBool=$(waitForUserResponse "Modify '$filePath'?" validArgs[@])
+        reformatXML "$filePath"
+        
+        onlyLineChanges=$(onlyLineChanges "$filePath")
+        echoDebug echo "LINECHANGES: $onlyLineChanges"
+        uuidRegen=$(getUuidRegen "$filePath")
+        echoDebug echo "UUIDREGEN: $uuidRegen"
+        
+        if [[ "$onlyLineChanges" == "FALSE" ]] && [[ "$uuidRegen" == "FALSE" ]]
+        then
+            commitBool=$(waitForUserResponse "Modify '$filePath'?" validArgs[@])
+        fi
     elif [[ "$line" =~ $deletedRegex ]]
     then
         changeType="Removed"
         filePath=$(getTrackedFilePath "$line")
+        reformatXML "$filePath"
         commitBool=$(waitForUserResponse "Remove '$filePath'?" validArgs[@])
     else
         echo "Unknown object - please contact support"
@@ -76,5 +91,4 @@ else
     echo "No changes added."
 fi
 
-exec 3>&-
-rm 3
+exec 3>&- && rm 3

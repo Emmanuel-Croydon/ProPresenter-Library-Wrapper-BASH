@@ -86,7 +86,6 @@
 		FC7637892468082A00423B2A /* ProPresenter Library Wrapper */ = {
 			isa = PBXGroup;
 			children = (
-				FC05D010246B504000D686A4 /* envConfig.properties */,
 				FC7637AC246823B600423B2A /* BashScripts */,
 				FC7637AB246823A200423B2A /* AppleScripts */,
 				FC76378A2468082A00423B2A /* AppDelegate.h */,
@@ -118,6 +117,7 @@
 		FC7637AC246823B600423B2A /* BashScripts */ = {
 			isa = PBXGroup;
 			children = (
+				FC05D010246B504000D686A4 /* envConfig.properties */,
 				FC7637B424685D9200423B2A /* library.sh */,
 				FC7637B224685D9200423B2A /* startupWorker.sh */,
 				FC7637B324685D9200423B2A /* terminationWorker.sh */,

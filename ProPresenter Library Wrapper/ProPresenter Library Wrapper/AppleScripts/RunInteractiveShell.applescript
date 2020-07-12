@@ -48,7 +48,7 @@ on runInteractiveTerminalApp(pathToShScript as string)
             if not busy of cdScript then exit repeat
         end repeat
         
-        set shScript to do script "./" & fileName & " -x" in activeWindow
+        set shScript to do script "./" & fileName in activeWindow
         repeat
             delay 0.5
             if not busy of shScript then exit repeat
