@@ -58,7 +58,6 @@ do
     then
         changeType="Removed"
         filePath=$(getTrackedFilePath "$line")
-        reformatXML "$filePath"
         commitBool=$(waitForUserResponse "Remove '$filePath'?" validArgs[@])
     else
         echo "Unknown object - please contact support"
