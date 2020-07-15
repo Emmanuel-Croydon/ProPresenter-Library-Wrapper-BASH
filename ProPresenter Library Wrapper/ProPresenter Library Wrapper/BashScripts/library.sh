@@ -6,9 +6,10 @@ readEnvironmentConfig() {
         >&2 echo "Missing args in ${FUNCNAME[0]}"
         exit 1
     fi
-    export "$1"="$2"
+    local caught=0
+    export "$1"="$2" || caught=1
     
-    if [ $? -ne 0 ]
+    if [ $caught == 1 ]
     then
         return 1
     else
@@ -64,8 +65,9 @@ syncMasterLibrary() {
     do
     	firstTry=false
         local retry="n"
-        echoDebug git -C "$PPLibraryPath" pull
-        if [ $? -ne 0 ]
+        local caught=0
+        echoDebug git -C "$PPLibraryPath" pull || caught=1
+        if [ $caught == 1 ]
         then
             >&2 echo "Failed to sync with master library. Please check your network connection and then retry." || true
             retry=$(waitForUserResponse "Retry?")
@@ -89,8 +91,10 @@ removeLeftoverPlaylistData() {
 	echoDebug echo 'Copying default playlist file across...'
     echoDebug echo "$PPLibraryPath"
     echoDebug echo "$PPLibraryPath/Config Templates/macOS_Default.pro6pl"
-	cp "$PPLibraryPath/Config Templates/macOS_Default.pro6pl"  "$PPPlayListLocation/Default.pro6pl"
-    if [ $? -ne 0 ]
+    
+    local caught=0
+	cp "$PPLibraryPath/Config Templates/macOS_Default.pro6pl"  "$PPPlayListLocation/Default.pro6pl" || caught=1
+    if [ $caught == 1 ]
     then
         >&2 echo "Failed to copy playlist file."
         return 1
@@ -102,8 +106,10 @@ removeLeftoverPlaylistData() {
 
 copyLabelTemplateFile() {
 	echoDebug echo 'Copying label templates across...'
-	cp "$PPLibraryPath/Config Templates/macOS_LabelSettings.xml" "$PPLabelLocation/LabelSettings.xml"
-    if [ $? -ne 0 ]
+ 
+    local caught=0
+	cp "$PPLibraryPath/Config Templates/macOS_LabelSettings.xml" "$PPLabelLocation/LabelSettings.xml" || caught=1
+    if [ $caught == 1 ]
     then
         >&2 echo "Failed to copy template file."
         return 1
@@ -185,10 +191,11 @@ invokeBranchPush() {
     do
         firstTry=false
         retry="n"
+        local caught=0
         
-        echoDebug git -C "$PPLibraryPath" push --set-upstream origin "$1"
+        echoDebug git -C "$PPLibraryPath" push --set-upstream origin "$1" || caught=1
         
-        if [ $? -ne 0 ]
+        if [ $caught == 1 ]
         then
             >&2 echo -e "Failed to push branch. Please check your network connection and then retry.\nIf network is currently unavailable, please do the following:\n\n1) Restart the app when a network connection is available. Do NOT sync with master library on start up.\n2) Quit ProPresenter to retry adding your changes to the master library.\n\nIf this problem persists, please contact support." || true
             retry=$(waitForUserResponse "Retry?")
@@ -213,9 +220,10 @@ invokeChangeCommit() {
     local dateTime=$(date +"%Y-%m-%d_%H%M")
     local machine=$(hostname)
     local user=$(whoami)
+    local caught=0
     echoDebug echo 'Change added'
-    echoDebug git -C "$PPLibraryPath" commit -m "$2 $1 $dateTime $machine/$user"
-    if [ $? -ne 0 ]
+    echoDebug git -C "$PPLibraryPath" commit -m "$2 $1 $dateTime $machine/$user" || caught=1
+    if [ $caught == 1 ]
     then
         >&2 echo "Commit failed, please contact support"
         return 1
@@ -240,9 +248,10 @@ invokeChangePush() {
         firstTry=false
         retry="n"
         
-        echoDebug git -C "$PPLibraryPath" push
+        local caught=0
+        echoDebug git -C "$PPLibraryPath" push || caught=1
         
-        if [ $? -ne 0 ]
+        if [ $caught == 1 ]
         then
             >&2 echo -e "Failed to push changes. Please check your network connection and then retry.\nIf network is currently unavailable, please do the following:\n\n1) Restart the app when a network connection is available. Do NOT sync with master library on start up.\n2) Quit ProPresenter to retry adding your changes to the master library.\n\nIf this problem persists, please contact support." || true
             retry=$(waitForUserResponse "Retry?")
@@ -383,7 +392,8 @@ elementIn() {
 echoDebug() {
     if [[ "$-" == *x* ]]
     then
-        local output=$("$@" 2>&1)
+        local output
+        output=$("$@" 2>&1)
         local exitCode="$?"
         >&2 echo "$output"
     else
@@ -413,7 +423,7 @@ checkInstall() {
 }
 
 writeSplashScreen() {
-    printf '
+    printf '\e[32m
 ██████╗ ██████╗  ██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗███╗   ██╗████████╗███████╗██████╗
 ██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║╚══██╔══╝██╔════╝██╔══██╗
 ██████╔╝██████╔╝██║   ██║██████╔╝██████╔╝█████╗  ███████╗█████╗  ██╔██╗ ██║   ██║   █████╗  ██████╔╝
@@ -438,7 +448,7 @@ writeSplashScreen() {
                                                               
                                                               
                                                               
-                                                              
+\e[0m
 '
     sleep 1
     return 0

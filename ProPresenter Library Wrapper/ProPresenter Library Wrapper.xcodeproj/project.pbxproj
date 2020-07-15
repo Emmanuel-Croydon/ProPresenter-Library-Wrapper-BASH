@@ -8,10 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		FC05D011246B504000D686A4 /* envConfig.properties in Resources */ = {isa = PBXBuildFile; fileRef = FC05D010246B504000D686A4 /* envConfig.properties */; };
+		FC6567F024BFA26800455107 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = FC6567EF24BFA26800455107 /* AppIcon.icns */; };
 		FC76378C2468082A00423B2A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FC76378B2468082A00423B2A /* AppDelegate.m */; };
 		FC76378E2468083500423B2A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC76378D2468083500423B2A /* Assets.xcassets */; };
 		FC7637942468083500423B2A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FC7637932468083500423B2A /* main.m */; };
-		FC76379F2468083500423B2A /* ProPresenter_Library_WrapperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FC76379E2468083500423B2A /* ProPresenter_Library_WrapperTests.m */; };
 		FC7637B524685D9200423B2A /* startupWorker.sh in Resources */ = {isa = PBXBuildFile; fileRef = FC7637B224685D9200423B2A /* startupWorker.sh */; };
 		FC7637B624685D9200423B2A /* terminationWorker.sh in Resources */ = {isa = PBXBuildFile; fileRef = FC7637B324685D9200423B2A /* terminationWorker.sh */; };
 		FC7637B724685D9200423B2A /* library.sh in Resources */ = {isa = PBXBuildFile; fileRef = FC7637B424685D9200423B2A /* library.sh */; };
@@ -30,14 +30,13 @@
 
 /* Begin PBXFileReference section */
 		FC05D010246B504000D686A4 /* envConfig.properties */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = envConfig.properties; sourceTree = "<group>"; };
+		FC6567EF24BFA26800455107 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = AppIcon.icns; path = ../../../../MegaDrive/AppIcon.icns; sourceTree = "<group>"; };
 		FC7637872468082A00423B2A /* ProPresenter Library Wrapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ProPresenter Library Wrapper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC76378A2468082A00423B2A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		FC76378B2468082A00423B2A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		FC76378D2468083500423B2A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FC7637932468083500423B2A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		FC76379A2468083500423B2A /* ProPresenter Library WrapperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ProPresenter Library WrapperTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		FC76379E2468083500423B2A /* ProPresenter_Library_WrapperTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProPresenter_Library_WrapperTests.m; sourceTree = "<group>"; };
-		FC7637A02468083500423B2A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FC7637A924680B8900423B2A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FC7637AD2468247D00423B2A /* RunInteractiveShell.applescript */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.applescript; path = RunInteractiveShell.applescript; sourceTree = "<group>"; };
 		FC7637B224685D9200423B2A /* startupWorker.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = startupWorker.sh; sourceTree = "<group>"; };
@@ -69,7 +68,6 @@
 			children = (
 				FC7637B824685DD100423B2A /* RunInteractiveShell.scpt */,
 				FC7637892468082A00423B2A /* ProPresenter Library Wrapper */,
-				FC76379D2468083500423B2A /* ProPresenter Library WrapperTests */,
 				FC7637882468082A00423B2A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,20 +88,12 @@
 				FC7637AB246823A200423B2A /* AppleScripts */,
 				FC76378A2468082A00423B2A /* AppDelegate.h */,
 				FC76378B2468082A00423B2A /* AppDelegate.m */,
+				FC6567EF24BFA26800455107 /* AppIcon.icns */,
 				FC76378D2468083500423B2A /* Assets.xcassets */,
 				FC7637A924680B8900423B2A /* Info.plist */,
 				FC7637932468083500423B2A /* main.m */,
 			);
 			path = "ProPresenter Library Wrapper";
-			sourceTree = "<group>";
-		};
-		FC76379D2468083500423B2A /* ProPresenter Library WrapperTests */ = {
-			isa = PBXGroup;
-			children = (
-				FC76379E2468083500423B2A /* ProPresenter_Library_WrapperTests.m */,
-				FC7637A02468083500423B2A /* Info.plist */,
-			);
-			path = "ProPresenter Library WrapperTests";
 			sourceTree = "<group>";
 		};
 		FC7637AB246823A200423B2A /* AppleScripts */ = {
@@ -209,6 +199,7 @@
 				FC76378E2468083500423B2A /* Assets.xcassets in Resources */,
 				FC7637B924685DD100423B2A /* RunInteractiveShell.scpt in Resources */,
 				FC7637B724685D9200423B2A /* library.sh in Resources */,
+				FC6567F024BFA26800455107 /* AppIcon.icns in Resources */,
 				FC7637B624685D9200423B2A /* terminationWorker.sh in Resources */,
 				FC05D011246B504000D686A4 /* envConfig.properties in Resources */,
 				FC7637B524685D9200423B2A /* startupWorker.sh in Resources */,
@@ -258,7 +249,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FC76379F2468083500423B2A /* ProPresenter_Library_WrapperTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
