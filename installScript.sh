@@ -21,7 +21,7 @@ getAuthToken() {
 	local authBody='{"scopes": ["repo"], "note": "'"$user ProPresenter-Library-Wrapper"'"}'
 
 	echo "Username: " 1>&2
-	read username
+	read username </dev/tty
 
 	local response=$(curl -f -X POST -H "Content-Type: application/json" -H "Accept: application/vnd.github.v3.json" -u "$username" -d "$authBody" "$githubAuthUri")
 	local tokenRegex='"token": [\"]([^"]*)[\"]'
@@ -33,9 +33,38 @@ getAuthToken() {
 }
 
 checkRootPrivileges
-token=$(getAuthToken)
-echo "$token"
 
+properties="./envConfig.properties"
 
-# TODO: clone repo
-# TODO: api token
+if [ -f "$properties" ]
+then
+	while IFS="=" read -r key value
+	do
+    	if [ "$key" == 'PPLibraryAuthToken' ]
+    	then
+    		value=$(getAuthToken)
+    	elif [ "$key" == 'PPLibraryPath' ]
+    	then
+    		libraryPath=`dirname "$value"`
+    	elif [ "$key" == 'PPRepoLocation' ]
+    	then
+    		repoPath="$value"
+    	fi
+
+    	printf '%s\n' "$key=$value"
+	done < "$properties" > "$properties.tmp" && mv "$properties.tmp" "$properties"
+
+	cp "$properties" "./ProPresenter Library Wrapper.app/Contents/Resources/envConfig.properties"
+	rm -rf "/Applications/ProPresenter Library Wrapper.app"
+	cp -r "./ProPresenter Library Wrapper.app" "/Applications/ProPresenter Library Wrapper.app"
+else
+	echo "Properties file not found, exiting"
+	exit 1
+fi
+
+if [ -d "$libraryPath" ]
+then
+	git -C "$libraryPath" clone "https://github.com/$repoPath.git"
+else
+	echo "Could not find library directory"
+fi
