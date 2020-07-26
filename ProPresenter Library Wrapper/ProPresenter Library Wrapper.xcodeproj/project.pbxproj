@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		FC05D011246B504000D686A4 /* envConfig.properties in Resources */ = {isa = PBXBuildFile; fileRef = FC05D010246B504000D686A4 /* envConfig.properties */; };
-		FC6567F024BFA26800455107 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = FC6567EF24BFA26800455107 /* AppIcon.icns */; };
 		FC76378C2468082A00423B2A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FC76378B2468082A00423B2A /* AppDelegate.m */; };
 		FC76378E2468083500423B2A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC76378D2468083500423B2A /* Assets.xcassets */; };
 		FC7637942468083500423B2A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FC7637932468083500423B2A /* main.m */; };
@@ -16,6 +15,7 @@
 		FC7637B624685D9200423B2A /* terminationWorker.sh in Resources */ = {isa = PBXBuildFile; fileRef = FC7637B324685D9200423B2A /* terminationWorker.sh */; };
 		FC7637B724685D9200423B2A /* library.sh in Resources */ = {isa = PBXBuildFile; fileRef = FC7637B424685D9200423B2A /* library.sh */; };
 		FC7637B924685DD100423B2A /* RunInteractiveShell.scpt in Resources */ = {isa = PBXBuildFile; fileRef = FC7637B824685DD100423B2A /* RunInteractiveShell.scpt */; };
+		FCE1B2FC24CCE3880007C0A9 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = FCE1B2FB24CCE3880007C0A9 /* AppIcon.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,7 +30,6 @@
 
 /* Begin PBXFileReference section */
 		FC05D010246B504000D686A4 /* envConfig.properties */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = envConfig.properties; sourceTree = "<group>"; };
-		FC6567EF24BFA26800455107 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = AppIcon.icns; path = ../../../../MegaDrive/AppIcon.icns; sourceTree = "<group>"; };
 		FC7637872468082A00423B2A /* ProPresenter Library Wrapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ProPresenter Library Wrapper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC76378A2468082A00423B2A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		FC76378B2468082A00423B2A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -43,6 +42,7 @@
 		FC7637B324685D9200423B2A /* terminationWorker.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = terminationWorker.sh; sourceTree = "<group>"; };
 		FC7637B424685D9200423B2A /* library.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = library.sh; sourceTree = "<group>"; };
 		FC7637B824685DD100423B2A /* RunInteractiveShell.scpt */ = {isa = PBXFileReference; lastKnownFileType = file; name = RunInteractiveShell.scpt; path = "ProPresenter Library Wrapper/AppleScripts/RunInteractiveShell.scpt"; sourceTree = "<group>"; };
+		FCE1B2FB24CCE3880007C0A9 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,8 +87,8 @@
 				FC7637AC246823B600423B2A /* BashScripts */,
 				FC7637AB246823A200423B2A /* AppleScripts */,
 				FC76378A2468082A00423B2A /* AppDelegate.h */,
+				FCE1B2FB24CCE3880007C0A9 /* AppIcon.icns */,
 				FC76378B2468082A00423B2A /* AppDelegate.m */,
-				FC6567EF24BFA26800455107 /* AppIcon.icns */,
 				FC76378D2468083500423B2A /* Assets.xcassets */,
 				FC7637A924680B8900423B2A /* Info.plist */,
 				FC7637932468083500423B2A /* main.m */,
@@ -199,7 +199,7 @@
 				FC76378E2468083500423B2A /* Assets.xcassets in Resources */,
 				FC7637B924685DD100423B2A /* RunInteractiveShell.scpt in Resources */,
 				FC7637B724685D9200423B2A /* library.sh in Resources */,
-				FC6567F024BFA26800455107 /* AppIcon.icns in Resources */,
+				FCE1B2FC24CCE3880007C0A9 /* AppIcon.icns in Resources */,
 				FC7637B624685D9200423B2A /* terminationWorker.sh in Resources */,
 				FC05D011246B504000D686A4 /* envConfig.properties in Resources */,
 				FC7637B524685D9200423B2A /* startupWorker.sh in Resources */,

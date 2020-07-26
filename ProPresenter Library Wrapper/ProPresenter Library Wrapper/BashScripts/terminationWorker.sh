@@ -5,8 +5,6 @@
 # ==================================================================================================
 #
 
-# TODO: work out how to build and distribute
-
 . ./library.sh
 
 set -e
@@ -21,65 +19,61 @@ checkInstall
 clear
 
 branchName=$(getWorkingBranchName)
+validArgs=("y" "n")
 
 exec 3<>/dev/null
-git -C "$PPLibraryPath" status --porcelain=v1 >3
 
-while IFS= read -r -u4 line
+for directory in $(ls "$PPLibraryPath")
 do
-    validArgs=("y" "n")
-    commitBool="n"
-    untrackedRegex="^\?\? "
-    modifiedRegex="^ M "
-    deletedRegex="^ D "
-    
-    if [[ "$line" =~ $untrackedRegex ]]
+    git -C "$PPLibraryPath" status "$PPLibraryPath/$directory" --porcelain=v1 >3
+
+    if [[ $(git -C "$PPLibraryPath" status "$PPLibraryPath/$directory" --porcelain=v1) && $(waitForUserResponse "Make changes to '$directory'?" validArgs[@]) == 'y' && "$directory" != 'Playlists' ]]
     then
-        changeType="Added"
-        filePath=$(getUntrackedFilePath "$line")
-        reformatXML "$filePath"
-        commitBool=$(waitForUserResponse "Add '$filePath'?" validArgs[@])
-    elif [[ "$line" =~ $modifiedRegex ]]
-    then
-        changeType="Modified"
-        filePath=$(getTrackedFilePath "$line")
-        reformatXML "$filePath"
-        
-        onlyLineChanges=$(onlyLineChanges "$filePath")
-        echoDebug echo "LINECHANGES: $onlyLineChanges"
-        uuidRegen=$(getUuidRegen "$filePath")
-        echoDebug echo "UUIDREGEN: $uuidRegen"
-        
-        if [[ "$onlyLineChanges" == "FALSE" ]] && [[ "$uuidRegen" == "FALSE" ]]
-        then
-            commitBool=$(waitForUserResponse "Modify '$filePath'?" validArgs[@])
-        fi
-    elif [[ "$line" =~ $deletedRegex ]]
-    then
-        changeType="Removed"
-        filePath=$(getTrackedFilePath "$line")
-        commitBool=$(waitForUserResponse "Remove '$filePath'?" validArgs[@])
-    else
-        echo "Unknown object - please contact support"
-        commitBool="n"
+        while IFS= read -r -u4 line
+        do
+            commitBool="n"
+            untrackedRegex="^\?\? "
+            modifiedRegex="^ M "
+            deletedRegex="^ D "
+            
+            if [[ "$line" =~ $untrackedRegex ]]
+            then
+                changeType="Added"
+                filePath=$(getUntrackedFilePath "$line")
+                commitBool=$(waitForUserResponse "Add '$filePath'?" validArgs[@])
+            elif [[ "$line" =~ $modifiedRegex ]]
+            then
+                changeType="Modified"
+                filePath=$(getTrackedFilePath "$line")
+                commitBool=$(waitForUserResponse "Modify '$filePath'?" validArgs[@])
+            elif [[ "$line" =~ $deletedRegex ]]
+            then
+                changeType="Removed"
+                filePath=$(getTrackedFilePath "$line")
+                commitBool=$(waitForUserResponse "Remove '$filePath'?" validArgs[@])
+            else
+                echo "Unknown object - please contact support"
+                commitBool="n"
+            fi
+            
+            if [ "$commitBool" == "y" ]
+            then
+                if [ "$branchName" == "master" ]
+                then
+                    newBranch
+                    branchName=$(getWorkingBranchName)
+                    invokeChangeCommit "$filePath" "$changeType"
+                else
+                    invokeChangeCommit "$filePath" "$changeType"
+                fi
+            elif [ "$commitBool" == "n" ]
+            then
+                # Do Nothing
+                echoDebug echo "commitBool == n"
+            fi
+        done 4<3
     fi
-    
-    if [ "$commitBool" == "y" ]
-    then
-        if [ "$branchName" == "master" ]
-        then
-            newBranch
-            branchName=$(getWorkingBranchName)
-            invokeChangeCommit "$filePath" "$changeType"
-        else
-            invokeChangeCommit "$filePath" "$changeType"
-        fi
-    elif [ "$commitBool" == "n" ]
-    then
-        # Do Nothing
-        echoDebug echo "commitBool == n"
-    fi
-done 4<3
+done
 
 if [ "$branchName" != "master" ]
 then

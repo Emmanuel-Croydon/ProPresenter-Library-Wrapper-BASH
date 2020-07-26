@@ -64,7 +64,10 @@ fi
 
 if [ -d "$libraryPath" ]
 then
-	git -C "$libraryPath" clone "https://github.com/$repoPath.git"
+	git -C "$libraryPath" init
+	git -C "$libraryPath" remote add origin "https://github.com/$repoPath.git"
+	git -C "$libraryPath" fetch
+	git -C "$libraryPath" checkout -t origin/master -f
 else
 	echo "Could not find library directory"
 fi

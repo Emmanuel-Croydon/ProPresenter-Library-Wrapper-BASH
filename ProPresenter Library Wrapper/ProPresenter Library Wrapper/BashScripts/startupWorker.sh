@@ -39,8 +39,6 @@ do
 	if [ "$response" == "y" ]
 	then
 		syncMasterLibrary
-		removeLeftoverPlaylistData
-		copyLabelTemplateFile
 		startProPresenter
 	elif [ "$response" == "n" ]
 	then

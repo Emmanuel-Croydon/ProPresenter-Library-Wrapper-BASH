@@ -37,7 +37,7 @@
 - (void)appQuitNotification:(NSNotification *)anotification {
     NSString *appName = [[anotification userInfo][NSWorkspaceApplicationKey] localizedName];
     
-    if([appName isEqualToString:(@"ProPresenter 6")]) {
+    if([appName isEqualToString:(@"ProPresenter")]) {
         [self runInteractiveTerminalApp:[[NSBundle mainBundle] pathForResource:@"terminationWorker" ofType:@"sh"]];
         [NSApp terminate:nil];
     } else {
