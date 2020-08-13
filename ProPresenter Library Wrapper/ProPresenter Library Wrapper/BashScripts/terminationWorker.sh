@@ -27,7 +27,7 @@ for directory in $(ls "$PPLibraryPath")
 do
     git -C "$PPLibraryPath" status "$PPLibraryPath/$directory" --porcelain=v1 >3
 
-    if [[ $(git -C "$PPLibraryPath" status "$PPLibraryPath/$directory" --porcelain=v1) && $(waitForUserResponse "Make changes to '$directory'?" validArgs[@]) == 'y' && "$directory" != 'Playlists' ]]
+    if [[ $(git -C "$PPLibraryPath" status "$PPLibraryPath/$directory" --porcelain=v1) && "$directory" != 'Playlists' && $(waitForUserResponse "Make changes to '$directory'?" validArgs[@]) == 'y' ]]
     then
         while IFS= read -r -u4 line
         do
