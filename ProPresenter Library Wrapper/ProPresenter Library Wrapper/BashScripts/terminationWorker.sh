@@ -79,7 +79,6 @@ do
                     commitBool=$(waitForUserResponse "${fileLevelMessage/<FilePath>/$filePath}" validArgs[@])
                 elif [[ "$line" =~ $matcher ]]
                 then
-                    changeType="Modified"
                     filePath=$(getTrackedFilePath "$line")
                     commitBool=$(waitForUserResponse "${fileLevelMessage/<FilePath>/$filePath}" validArgs[@])
                 else
