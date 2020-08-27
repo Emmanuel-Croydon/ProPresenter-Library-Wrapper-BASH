@@ -21,58 +21,94 @@ clear
 branchName=$(getWorkingBranchName)
 validArgs=("y" "n")
 
-exec 3<>/dev/null
-
 for directory in $(ls "$PPLibraryPath")
 do
-    git -C "$PPLibraryPath" status "$PPLibraryPath/$directory" --porcelain=v1 >3
-
-    if [[ $(git -C "$PPLibraryPath" status "$PPLibraryPath/$directory" --porcelain=v1) && "$directory" != 'Playlists' && $(waitForUserResponse "Make changes to '$directory'?" validArgs[@]) == 'y' ]]
-    then
-        while IFS= read -r -u4 line
+    changeTypes=("Added" "Modified" "Removed" "Unknown")
+    
+    for changeType in "${changeTypes[@]}"
+    do
+        rm -f statusFilter
+        touch statusFilter
+        statusPresent=0
+        
+        if [[ "$changeType" == 'Added' ]]
+        then
+            matcher="^\?\? "
+            dirLevelMessage="Add items to '$directory'?"
+            fileLevelMessage="    - Add '<FilePath>'?"
+        elif [[ "$changeType" == 'Modified' ]]
+        then
+            matcher="^ M "
+            dirLevelMessage="Modify items in '$directory'?"
+            fileLevelMessage="    - Modify '<FilePath>'?"
+        elif [[ "$changeType" == 'Removed' ]]
+        then
+            matcher="^ D "
+            dirLevelMessage="Remove items from '$directory'?"
+            fileLevelMessage="    - Remove '<FilePath>'?"
+        elif [[ "$changeType" == 'Unknown' ]]
+        then
+            matcher="^(?!\?\? .*$)(?! D .*$)(?! M .*$).*"
+        fi
+        
+        git -C "$PPLibraryPath" status "$PPLibraryPath/$directory" --porcelain=v1 >status
+        
+        while IFS= read -r -u3 line
         do
-            commitBool="n"
-            untrackedRegex="^\?\? "
-            modifiedRegex="^ M "
-            deletedRegex="^ D "
-            
-            if [[ "$line" =~ $untrackedRegex ]]
+            if [[ "$line" =~ $matcher && changeType == 'Unknown' ]]
             then
-                changeType="Added"
-                filePath=$(getUntrackedFilePath "$line")
-                commitBool=$(waitForUserResponse "Add '$filePath'?" validArgs[@])
-            elif [[ "$line" =~ $modifiedRegex ]]
+                echo 'Unknown change object detected - please contact support'
+            elif [[ "$line" =~ $matcher ]]
             then
-                changeType="Modified"
-                filePath=$(getTrackedFilePath "$line")
-                commitBool=$(waitForUserResponse "Modify '$filePath'?" validArgs[@])
-            elif [[ "$line" =~ $deletedRegex ]]
-            then
-                changeType="Removed"
-                filePath=$(getTrackedFilePath "$line")
-                commitBool=$(waitForUserResponse "Remove '$filePath'?" validArgs[@])
-            else
-                echo "Unknown object - please contact support"
+                echoDebug "$line"
+                echo "$line" >>statusFilter
+                statusPresent=1
+            fi
+        done 3<status
+
+        if [[ "$changeType" != 'Unknown' && "$statusPresent" == 1 && "$directory" != 'Playlists' && $(waitForUserResponse "$dirLevelMessage" validArgs[@]) == 'y' ]]
+        then
+            echo ''
+            while IFS= read -r -u5 line
+            do
                 commitBool="n"
-            fi
-            
-            if [ "$commitBool" == "y" ]
-            then
-                if [ "$branchName" == "master" ]
+                
+                if [[ "$line" =~ $matcher && "$changeType" == 'Added' ]]
                 then
-                    newBranch
-                    branchName=$(getWorkingBranchName)
-                    invokeChangeCommit "$filePath" "$changeType"
+                    filePath=$(getUntrackedFilePath "$line")
+                    commitBool=$(waitForUserResponse "${fileLevelMessage/<FilePath>/$filePath}" validArgs[@])
+                elif [[ "$line" =~ $matcher ]]
+                then
+                    changeType="Modified"
+                    filePath=$(getTrackedFilePath "$line")
+                    commitBool=$(waitForUserResponse "${fileLevelMessage/<FilePath>/$filePath}" validArgs[@])
                 else
-                    invokeChangeCommit "$filePath" "$changeType"
+                    echo "Unknown object - please contact support"
+                    commitBool="n"
                 fi
-            elif [ "$commitBool" == "n" ]
-            then
-                # Do Nothing
-                echoDebug echo "commitBool == n"
-            fi
-        done 4<3
-    fi
+                
+                if [ "$commitBool" == "y" ]
+                then
+                    if [ "$branchName" == "master" ]
+                    then
+                        newBranch
+                        branchName=$(getWorkingBranchName)
+                        invokeChangeCommit "$filePath" "$changeType"
+                    else
+                        invokeChangeCommit "$filePath" "$changeType"
+                    fi
+                elif [ "$commitBool" == "n" ]
+                then
+                    # Do Nothing
+                    echoDebug echo "commitBool == n"
+                fi
+            done 5<statusFilter
+            
+            echo ''
+            rm status
+            rm statusFilter
+        fi
+    done
 done
 
 if [ "$branchName" != "master" ]
@@ -82,5 +118,3 @@ then
 else
     echo "No changes added."
 fi
-
-exec 3>&- && rm 3
