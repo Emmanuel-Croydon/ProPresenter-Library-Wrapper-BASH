@@ -58,7 +58,7 @@ do
             if [[ "$line" =~ $matcher && changeType == 'Unknown' ]]
             then
                 echo 'Unknown change object detected - please contact support'
-            elif [[ "$line" =~ $matcher ]]
+            elif [[ "$line" =~ $matcher && "$line" != *"Playlists/Library"* ]]
             then
                 echoDebug "$line"
                 echo "$line" >>statusFilter
@@ -66,7 +66,7 @@ do
             fi
         done 3<status
 
-        if [[ "$changeType" != 'Unknown' && "$statusPresent" == 1 && "$directory" != 'Playlists' && $(waitForUserResponse "$dirLevelMessage" validArgs[@]) == 'y' ]]
+        if [[ "$changeType" != 'Unknown' && "$statusPresent" == 1 && $(waitForUserResponse "$dirLevelMessage" validArgs[@]) == 'y' ]]
         then
             echo ''
             while IFS= read -r -u5 line
@@ -80,7 +80,12 @@ do
                 elif [[ "$line" =~ $matcher ]]
                 then
                     filePath=$(getTrackedFilePath "$line")
-                    commitBool=$(waitForUserResponse "${fileLevelMessage/<FilePath>/$filePath}" validArgs[@])
+                    if [[ "$filePath" != 'Playlists/Library' ]]
+                    then
+                        commitBool=$(waitForUserResponse "${fileLevelMessage/<FilePath>/$filePath}" validArgs[@])
+                    else
+                        commitBool="n"
+                    fi
                 else
                     echo "Unknown object - please contact support"
                     commitBool="n"
