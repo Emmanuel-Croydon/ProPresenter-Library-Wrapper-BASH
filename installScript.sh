@@ -45,7 +45,7 @@ then
     		value=$(getAuthToken)
     	elif [ "$key" == 'PPLibraryPath' ]
     	then
-    		libraryPath=`dirname "$value"`
+    		libraryPath="$value"
     	elif [ "$key" == 'PPRepoLocation' ]
     	then
     		repoPath="$value"
@@ -54,7 +54,7 @@ then
     	printf '%s\n' "$key=$value"
 	done < "$properties" > "$properties.tmp" && mv "$properties.tmp" "$properties"
 
-	cp "$properties" "./ProPresenter Library Wrapper.app/Contents/Resources/envConfig.properties"
+	sed -n '1,5p' "$properties" >> "./ProPresenter Library Wrapper.app/Contents/Resources/envConfig.properties"
 	rm -rf "/Applications/ProPresenter Library Wrapper.app"
 	cp -r "./ProPresenter Library Wrapper.app" "/Applications/ProPresenter Library Wrapper.app"
 else
