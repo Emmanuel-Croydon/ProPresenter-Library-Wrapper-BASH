@@ -6,6 +6,12 @@ readEnvironmentConfig() {
         >&2 echo "Missing args in ${FUNCNAME[0]}"
         exit 1
     fi
+    
+    if [[ "$1" == '#'* ]]
+    then
+        return 0
+    fi
+    
     local caught=0
     export "$1"="$2" || caught=1
     
