@@ -95,9 +95,9 @@ getAuthToken() {
 	fi
 }
 
-substituteEnvironmentConfig() {
-	sed -i '' '/^# Add environment config here >>>>>>$/,/^# <<<<<< add environment config here$/{/^# Add environment config here >>>>>>$/!{/^# <<<<<< add environment config here$/!d;};}' "./ProPresenter Library Wrapper.app/Contents/Resources/envConfig.properties"
-	sed -i '' -e "/^# Add environment config here >>>>>>$/r envConfig.properties" -e '/^# Add environment config here >>>>>>$/a\' "./ProPresenter Library Wrapper.app/Contents/Resources/envConfig.properties"
+copyConfigToUserDirectory() {
+	mkdir -p ~/Library/Preferences/ProPresenter\ Library\ Wrapper/ && cp "./envConfig.properties" ~/Library/Preferences/ProPresenter\ Library\ Wrapper/envConfig.properties
+	chown -R $(logname) ~/Library/Preferences/ProPresenter\ Library\ Wrapper/envConfig.properties
 	return 0
 }
 
@@ -155,8 +155,7 @@ then
 
     	printf '%s\n' "$key=$value"
 	done < "$properties" > "$properties.tmp" && mv "$properties.tmp" "$properties"
-
-	substituteEnvironmentConfig
+	copyConfigToUserDirectory
 	copyToApplicationDirectory
 else
 	echo "Properties file not found, exiting"

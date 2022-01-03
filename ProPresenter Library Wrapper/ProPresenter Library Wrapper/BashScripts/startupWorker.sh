@@ -9,7 +9,7 @@
 
 set -e
 
-propertiesFile="./envConfig.properties"
+propertiesFile=~/Library/Preferences/ProPresenter\ Library\ Wrapper/envConfig.properties
 while IFS="=" read -r key value
 do
     readEnvironmentConfig "$key" "$value"
