@@ -30,8 +30,8 @@ then
         
         for changeType in "${changeTypes[@]}"
         do
-            rm -f statusFilter
-            touch statusFilter
+            rm -f "$TMPDIR/statusFilter"
+            touch "$TMPDIR/statusFilter"
             statusPresent=0
             
             if [[ "$changeType" == 'Added' ]]
@@ -54,7 +54,7 @@ then
                 matcher="^(?!\?\? .*$)(?! D .*$)(?! M .*$).*"
             fi
             
-            git -C "$PPLibraryPath" status "$PPLibraryPath/$directory" --porcelain=v1 >status
+            git -C "$PPLibraryPath" status "$PPLibraryPath/$directory" --porcelain=v1 >"$TMPDIR/status"
             
             while IFS= read -r -u3 line
             do
@@ -64,10 +64,10 @@ then
                 elif [[ "$line" =~ $matcher && "$line" != *"Playlists/Library"* ]]
                 then
                     echoDebug "$line"
-                    echo "$line" >>statusFilter
+                    echo "$line" >>"$TMPDIR/statusFilter"
                     statusPresent=1
                 fi
-            done 3<status
+            done 3<"$TMPDIR/status"
 
             if [[ "$changeType" != 'Unknown' && "$statusPresent" == 1 && $(waitForUserResponse "$dirLevelMessage" validArgs[@]) == 'y' ]]
             then
@@ -109,11 +109,11 @@ then
                         # Do Nothing
                         echoDebug echo "commitBool == n"
                     fi
-                done 5<statusFilter
+                done 5<"$TMPDIR/statusFilter"
                 
                 echo ''
-                rm status
-                rm statusFilter
+                rm "$TMPDIR/status"
+                rm "$TMPDIR/statusFilter"
             fi
         done
     done
