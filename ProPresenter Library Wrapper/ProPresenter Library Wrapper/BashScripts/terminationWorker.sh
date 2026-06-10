@@ -61,7 +61,7 @@ then
                 if [[ "$line" =~ $matcher && changeType == 'Unknown' ]]
                 then
                     echo 'Unknown change object detected - please contact support'
-                elif [[ "$line" =~ $matcher && "$line" != *"Playlists/Library"* ]]
+                elif [[ "$line" =~ $matcher && "$line" != *"Playlists/Library"* && "$line" != *"Libraries/\[Import Area\]"* ]]
                 then
                     echoDebug "$line"
                     echo "$line" >>"$TMPDIR/statusFilter"
